@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - JOnAS: Java(TM) Open Application Server
+  - Copyright (C) 2007 Bull S.A.S.
+  - Contact: jonas-team@objectweb.org
+  -
+  - This library is free software; you can redistribute it and/or
+  - modify it under the terms of the GNU Lesser General Public
+  - License as published by the Free Software Foundation; either
+  - version 2.1 of the License, or any later version.
+  -
+  - This library is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  - Lesser General Public License for more details.
+  -
+  - You should have received a copy of the GNU Lesser General Public
+  - License along with this library; if not, write to the Free Software
+  - Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+  - USA
+  -
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - $Id: jms-jonas-client.xml 17882 2009-07-06 13:55:19Z coqp $
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+-->
+
+<jonas-client xmlns="http://www.objectweb.org/jonas/ns"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.objectweb.org/jonas/ns
+        http://jonas.ow2.org/ns/jonas-client_5_0.xsd" >
+
+  <jonas-resource>
+    <res-ref-name>jms/QueueConnectionFactory</res-ref-name>
+    <jndi-name>JQCF</jndi-name>
+  </jonas-resource>
+
+  <jonas-resource-env>
+    <resource-env-ref-name>jms/SampleQueue</resource-env-ref-name>
+    <jndi-name>SampleQueue</jndi-name>
+  </jonas-resource-env>
+</jonas-client>

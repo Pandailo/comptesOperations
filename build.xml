@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ - JOnAS: Java(TM) Open Application Server
+ - Copyright (C) 2007-2009 Bull S.A.S.
+ - Contact: jonas-team@ow2.org
+ -
+ - This library is free software; you can redistribute it and/or
+ - modify it under the terms of the GNU Lesser General Public
+ - License as published by the Free Software Foundation; either
+ - version 2.1 of the License, or any later version.
+ -
+ - This library is distributed in the hope that it will be useful,
+ - but WITHOUT ANY WARRANTY; without even the implied warranty of
+ - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ - Lesser General Public License for more details.
+ -
+ - You should have received a copy of the GNU Lesser General Public
+ - License along with this library; if not, write to the Free Software
+ - Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+ - USA
+ -
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ - $Id: build.xml 18736 2009-09-23 14:47:59Z loris $
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ -->
+
+<project xmlns:jonas="http://jonas.ow2.org"
+         name="Comptes and operations"
+         default="install"
+         basedir=".">
+
+    <!-- Import common rules -->
+    <import file="../jonas-common.xml" />
+
+    <!-- Build exploded archives or not ? -->
+    <property name="archives.exploded" value="false" />
+
+    <!-- Properties for the Client (name + deployment descriptor + pattern set) -->
+    <property name="client.main.class"
+              value="org.ow2.jonas.examples.ear.ExampleApplicationClient" />
+    <property name="client.name" value="ComptesOperations-application-client" />
+    <property name="client.dd" value="etc/application-client.xml" />
+    <property name="client.specificdd" value="etc/jonas-client.xml" />
+    <patternset id="client.patternset">
+        <include name="org/ow2/jonas/examples/ear/client/ApplicationClient.class" />
+    </patternset>
+    <property name="examples.resources.dir" value="${basedir}/etc" />
+    <patternset id="client.resources.patternset">
+        <include name="jaas.config" />
+    </patternset>
+
+    <target name="ear" depends="compile">
+
+        <!-- Package the EAR Sample -->
+        <jonas:ear dest="${ear.dir}/ComptesOperations.ear"
+                   dd="etc/application.xml">
+
+            <!-- The EjbJars with the following EJB3:
+                 * Initializer SLSB
+                 * Author & Book JPA Entities
+                 * JMSMessageBean MDB
+                 * Writer SLSB
+                 * Reader SLSB
+                 * Mailer SLSB
+             -->
+            <ejb dest="ejb3.jar" persistencedd="etc/persistence.xml" manifest="etc/META-INF/MANIFEST.MF">
+                <fileset dir="${examples.classes.dir}">
+                    <patternset>
+                        <include name="org/ow2/jonas/examples/ear/init/*.class" />
+                        <include name="org/ow2/jonas/examples/ear/entity/*.class" />
+                        <include name="org/ow2/jonas/examples/ear/mdb/*.class" />
+                        <include name="org/ow2/jonas/examples/ear/writer/*.class" />
+                        <include name="org/ow2/jonas/examples/ear/reader/*.class" />
+                        <include name="org/ow2/jonas/examples/ear/mail/*.class" />
+                    </patternset>
+                </fileset>
+            </ejb>
+
+            <!-- The WebApp -->
+            <war dest="comptesOperations.war" dd="etc/web.xml">
+                <classes dir="${examples.classes.dir}">
+                    <patternset>
+                        <include name="org/ow2/jonas/examples/ear/web/*.class" />
+                    </patternset>
+                </classes>
+                <fileset dir="etc/web" />
+            </war>
+
+            <!-- JMS interacting Application Client -->
+            <client dest="jms-application-client.jar"
+                    mainclass="org.ow2.jonas.examples.ear.client.JMSApplicationClient"
+                    dd="etc/jms-application-client.xml"
+                    specificdd="etc/jms-jonas-client.xml">
+                <fileset dir="${examples.classes.dir}">
+                    <patternset>
+                        <include name="org/ow2/jonas/examples/ear/client/JMSApplicationClient.class" />
+                    </patternset>
+                </fileset>
+            </client>
+
+            <!-- Not Secured Application Client -->
+            <client dest="not-secured-application-client.jar"
+                    mainclass="org.ow2.jonas.examples.ear.client.NotSecuredApplicationClient"
+                    dd="etc/not-secured-application-client.xml"
+                    specificdd="etc/not-secured-jonas-client.xml">
+                <fileset dir="${examples.classes.dir}">
+                    <patternset>
+                        <include name="org/ow2/jonas/examples/ear/client/NotSecuredApplicationClient.class" />
+                    </patternset>
+                </fileset>
+            </client>
+
+            <!-- Secured Application Client -->
+            <client dest="jaas-secured-application-client.jar"
+                    mainclass="org.ow2.jonas.examples.ear.client.SecuredApplicationClient"
+                    dd="etc/jaas-secured-application-client.xml"
+                    specificdd="etc/jaas-secured-jonas-client.xml">
+                <fileset dir="${examples.classes.dir}">
+                    <patternset>
+                        <include name="org/ow2/jonas/examples/ear/client/SecuredApplicationClient.class" />
+                    </patternset>
+                </fileset>
+                <fileset dir="${basedir}/etc">
+                    <patternset>
+                        <include name="jaas.config" />
+                    </patternset>
+                </fileset>
+            </client>
+
+        </jonas:ear>
+    </target>
+
+    <!-- Install example -->
+    <target name="install"
+            depends="init, compile, ear"
+            description="Install this example in a deployable directory">
+    </target>
+
+    <macrodef name="jonas-client">
+        <attribute name="ear"/>
+        <attribute name="client"/>
+        <sequential>
+
+            <!-- JOnAS Client Container Classpath -->
+            <path id="client.path">
+                <pathelement location="${jonas.root}/lib/client.jar"/>
+                <pathelement location="${jonas.root}/lib/jonas-client.jar"/>
+            </path>
+
+            <!-- Execute the client in another JVM -->
+            <java fork="true"
+                  classpathref="client.path"
+                  classname="org.ow2.jonas.client.ClientContainer">
+
+                <!-- Uncomment for debugging -->
+                <!--jvmarg line="-Xint -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=4142,suspend=y"/-->
+
+                <!-- JVM Options -->
+                <sysproperty key="java.security.auth.login.config"
+                             value="${jonas.base}/conf/jaas.config" />
+                <sysproperty key="java.endorsed.dirs"
+                             value="${jonas.root}/lib/endorsed" />
+                <sysproperty key="jonas.root"
+                             value="${jonas.root}" />
+
+                <!-- Maybe that one can be avoided -->
+                <arg value="-nowsgen" />
+
+                <!-- The Application to execute -->
+                <arg path="@{ear}" />
+
+                <!-- Protocol properties -->
+                <arg value="-carolFile" />
+                <arg path="${jonas.base}/conf/carol.properties"/>
+
+                <!-- The Java EE Application client -->
+                <arg line="-jarClient @{client}" />
+            </java>
+        </sequential>
+    </macrodef>
+
+    <target name="run:jms-client" description="Execute the JMS Application Client">
+        <jonas-client ear="${ear.dir}/ComptesOperations.ear"
+                      client="jms-application-client.jar" />
+    </target>
+
+    <target name="run:secured-client" description="Execute the JAAS Secured Application Client">
+        <jonas-client ear="${ear.dir}/ComptesOperations.ear"
+                      client="jaas-secured-application-client.jar" />
+    </target>
+
+    <target name="run:not-secured-client" description="Execute the !Secured Application Client">
+        <jonas-client ear="${ear.dir}/ComptesOperations.ear"
+                      client="not-secured-application-client.jar" />
+    </target>
+</project>
+

@@ -1,0 +1,1 @@
+jclient %JONAS_BASE%\deploy\javaee5-earsample.ear -jarClient not-secured-application-client.jar -carolFile clientConfig\carol.properties -traceFile clientConfig\traceclient.properties

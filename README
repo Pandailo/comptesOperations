@@ -1,0 +1,10 @@
+- Ant tool must be launched in this directory
+    --> a file named javaee5-earsample.ear is produced in $JONAS_BASE/deploy
+
+- Configure JavaMail: see $JONAS_BASE/conf/MailMimePartDS1.properties and $JONAS_BASE/conf/MailSession1.properties
+
+- Start JOnAS
+
+- Go on http://localhost:9000/javaee5-earsample/
+
+- Example is ready

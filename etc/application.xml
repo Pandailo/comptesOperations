@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - JOnAS: Java(TM) Open Application Server
+  - Copyright (C) 2007-2008 Bull S.A.S.
+  - Contact: jonas-team@ow2.org
+  -
+  - This library is free software; you can redistribute it and/or
+  - modify it under the terms of the GNU Lesser General Public
+  - License as published by the Free Software Foundation; either
+  - version 2.1 of the License, or any later version.
+  -
+  - This library is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  - Lesser General Public License for more details.
+  -
+  - You should have received a copy of the GNU Lesser General Public
+  - License along with this library; if not, write to the Free Software
+  - Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+  - USA
+  -
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - $Id: application.xml 17350 2009-05-13 14:15:43Z fornacif $
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+-->
+
+<application
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                      http://java.sun.com/xml/ns/javaee/application_5.xsd"
+  version="5">
+
+
+  <description>Java EE 5.0 EAR Sample</description>
+  <display-name>Java EE 5.0 EAR Sample</display-name>
+
+  <!-- EJB Modules -->
+  <module>
+    <ejb>ejb3.jar</ejb>
+  </module>
+
+  <!-- Web Modules -->
+  <module>
+    <web>
+      <web-uri>comptesOperations.war</web-uri>
+      <context-root>ComptesOperations</context-root>
+    </web>
+  </module>
+
+  <!-- Application Client Modules -->
+  <module>
+    <!-- Application Client using JMS to interact with the application -->
+    <java>jms-application-client.jar</java>
+  </module>
+  <module>
+    <!-- Not secured Application Client (only access read-only beans) -->
+    <java>not-secured-application-client.jar</java>
+  </module>
+  <module>
+    <!-- Secured Application Client (can access all bean under a SecurityContext) -->
+    <java>jaas-secured-application-client.jar</java>
+  </module>
+
+</application>
